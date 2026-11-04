@@ -16,7 +16,7 @@ def LOG(level: int, *msg):
     elif level==3: TAG = "WARNING"
     elif level==4: TAG = "ERROR"
     if level >= LOG_LEVEL: print(f"{TAG}: {' '.join(msg)}")
-    if level==4: exit(1)
+    if level==4: os._exit(1)
 
 def perLineToken(no: int, line: str):
     tokens = []

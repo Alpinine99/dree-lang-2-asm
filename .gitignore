@@ -2,4 +2,7 @@
 *.asm
 */__pycache__/*
 *.swp
+*.spec
+dist/*
+build/*
 
