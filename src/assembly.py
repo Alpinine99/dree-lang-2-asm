@@ -11,13 +11,16 @@ class ASM:
             body += f"\n{self.section.data.getBody()}"
         body += f"\n{self.section.text.getBody()}"
         body += "\nmov rax, 60\nmov rdi, 0\nsyscall\n"
+        if self.section.funcs.edited:
+            body += f"\n{self.section.funcs.getBody()}"
         return body
 
     class Section:
         def __init__(self):
-            self.bss = self.InnerSec("section .bss")
-            self.data = self.InnerSec("section .data")
-            self.text = self.InnerSec("section .text\n_start:")
+            self.bss = self.InnerSec("\nsection .bss")
+            self.data = self.InnerSec("\nsection .data")
+            self.text = self.InnerSec("\nsection .text\n_start:")
+            self.funcs = self.InnerSec("\n")
 
         class InnerSec:
             def __init__(self, definition: str):

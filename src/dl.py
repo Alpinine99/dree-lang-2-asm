@@ -10,6 +10,22 @@ class Dl:
         self._var = [0, "v4r"]
         self._defined_vars = []
         self._intBufReserved = False
+        self._hasNumPrintFunc = False
+
+    def numPrintFunc(self):
+        fname = "pnum"
+        if not self._hasNumPrintFunc:
+            buf = self.resvIntBuf()
+            body = [
+                    f"{fname}:", f"mov rcx, {buf}", "add rcx, 20", "mov rbx, 10", 
+                    ".next_digit:", "xor rdx, rdx", "div rbx", "add dl, '0'", "dec rcx",
+                    "mov [rcx], dl", "test rax, rax", "jnz .next_digit", f"mov rbx, {buf}",
+                    "add rbx, 20", "sub rbx, rcx", "mov rax, 1", "mov rdi, 1", "mov rsi, rcx",
+                    "mov rdx, rbx", "syscall", "ret"
+                ]
+            self._asm.section.funcs.append("\n".join(body))
+            self._hasNumPrintFunc = True
+        return fname
 
     def getVar(self):
         self._var[0] += 1
@@ -69,15 +85,9 @@ class Dl:
                     self._asm.section.text.append("syscall")
 
                 elif _type == int:
-                    buf = self.resvIntBuf()
-                    body = [
-                        f"mov rax, [{var}]", f"mov rcx, {buf}", "add rcx, 20", "mov rbx, 10", 
-                        ".next_digit:", "xor rdx, rdx", "div rbx", "add dl, '0'", "dec rcx",
-                        "mov [rcx], dl", "test rax, rax", "jnz .next_digit", f"mov rbx, {buf}",
-                        "add rbx, 20", "sub rbx, rcx", "mov rax, 1", "mov rdi, 1", "mov rsi, rcx",
-                        "mov rdx, rbx", "syscall"
-                    ]
-                    self._asm.section.text.append("\n".join(body))
+                    fname = self.numPrintFunc()
+                    self._asm.section.text.append(f"mov rax, [{var}]")
+                    self._asm.section.text.append(f"call {fname}")
 
             else:
                 raise Exception(f"invalid token '{token}'")

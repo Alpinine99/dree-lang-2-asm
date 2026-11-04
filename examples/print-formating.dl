@@ -1,0 +1,10 @@
+temp_sensor = 24
+humidity_sensor = 500
+water_level_sensor = 70
+moisture_sensor = 90
+
+print: "The temperature is: " #temp_sensor "dC | "
+print: "The humidity is: " #humidity_sensor "% | "
+print: "The water level is: " #water_level_sensor "% | "
+printl: "The moisture is: " #moisture_sensor "%"
+
