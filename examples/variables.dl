@@ -1,0 +1,6 @@
+
+num = 65536
+name = "Andre"
+
+printl: "Hello " #name " Your number is: " #num
+
