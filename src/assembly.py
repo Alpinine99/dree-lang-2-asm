@@ -10,7 +10,7 @@ class ASM:
         if self.section.data.edited:
             body += f"\n{self.section.data.getBody()}"
         body += f"\n{self.section.text.getBody()}"
-        body += "\nmov rax, 60\nmov rdi, 0\nsyscall\n"
+        body += "\nmov rax, 60\nmov rdi, 0\nsyscall"
         if self.section.funcs.edited:
             body += f"\n{self.section.funcs.getBody()}"
         return body
@@ -20,7 +20,7 @@ class ASM:
             self.bss = self.InnerSec("\nsection .bss")
             self.data = self.InnerSec("\nsection .data")
             self.text = self.InnerSec("\nsection .text\n_start:")
-            self.funcs = self.InnerSec("\n")
+            self.funcs = self.InnerSec("")
 
         class InnerSec:
             def __init__(self, definition: str):

@@ -11,18 +11,29 @@ class Dl:
         self._defined_vars = []
         self._intBufReserved = False
         self._hasNumPrintFunc = False
+        self._hasPrintFunc = False
+
+    def printFunc(self):
+        fname = "pstr"
+        if not self._hasPrintFunc:
+            body = [
+                f"\n{fname}:", "mov rax, 1", "mov rdi, 1", "syscall", "ret"
+            ]
+            self._asm.section.funcs.append("\n".join(body))
+            self._hasPrintFunc = True
+        return fname
 
     def numPrintFunc(self):
         fname = "pnum"
         if not self._hasNumPrintFunc:
             buf = self.resvIntBuf()
             body = [
-                    f"{fname}:", f"mov rcx, {buf}", "add rcx, 20", "mov rbx, 10", 
-                    ".next_digit:", "xor rdx, rdx", "div rbx", "add dl, '0'", "dec rcx",
-                    "mov [rcx], dl", "test rax, rax", "jnz .next_digit", f"mov rbx, {buf}",
-                    "add rbx, 20", "sub rbx, rcx", "mov rax, 1", "mov rdi, 1", "mov rsi, rcx",
-                    "mov rdx, rbx", "syscall", "ret"
-                ]
+                f"\n{fname}:", f"mov rcx, {buf}", "add rcx, 20", "mov rbx, 10", 
+                ".next_digit:", "xor rdx, rdx", "div rbx", "add dl, '0'", "dec rcx",
+                "mov [rcx], dl", "test rax, rax", "jnz .next_digit", f"mov rbx, {buf}",
+                "add rbx, 20", "sub rbx, rcx", "mov rax, 1", "mov rdi, 1", "mov rsi, rcx",
+                "mov rdx, rbx", "syscall", "ret"
+            ]
             self._asm.section.funcs.append("\n".join(body))
             self._hasNumPrintFunc = True
         return fname
@@ -62,13 +73,12 @@ class Dl:
             if token[0] in ["'", "\""]:
                 var = self.getVar()
                 lenv = f"{var}_len"
+                fname = self.printFunc()
                 self._asm.section.data.append(f"{var}: db {token}")
                 self._asm.section.data.append(f"{lenv}: equ $ - {var}")
-                self._asm.section.text.append("mov rax, 1")
-                self._asm.section.text.append("mov rdi, 1")
                 self._asm.section.text.append(f"mov rsi, {var}")
                 self._asm.section.text.append(f"mov rdx, {lenv}")
-                self._asm.section.text.append("syscall")
+                self._asm.section.text.append(f"call {fname}")
 
             elif token[0] == "#":
                 defined_vars = [var for var, _ in self._defined_vars]
