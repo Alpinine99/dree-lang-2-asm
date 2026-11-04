@@ -12,6 +12,14 @@ class Dl:
         self._intBufReserved = False
         self._hasNumPrintFunc = False
         self._hasPrintFunc = False
+        self._hasNewline = False
+
+    def newline(self):
+        name = f"{self._var[1]}_nl"
+        if not self._hasNewline:
+            self._asm.section.data.append(f"{name}: db 10")
+            self._hasNewline = True
+        return name
 
     def printFunc(self):
         fname = "pstr"
@@ -105,7 +113,7 @@ class Dl:
         if KEYWORDS.get(tokens[0]) == 2:
             self._asm.section.text.append("mov rax, 1")
             self._asm.section.text.append("mov rdi, 1")
-            self._asm.section.text.append("mov byte [rsi], 10")
+            self._asm.section.text.append(f"mov rsi, {self.newline()}")
             self._asm.section.text.append("mov rdx, 1")
             self._asm.section.text.append("syscall")
 

@@ -352,21 +352,3 @@ dree-lang/
 └── .gitignore
 ```
 
-## Known limitations
-
-This is an early version. These behaviors are real, found by running the compiler, and are good first things to fix:
-
-- **`printl` overwrites the first byte of whatever it printed last.** It writes the newline with `mov byte [rsi], 10`, and `rsi` still points at the last string or variable. Printing the same variable twice shows it:
-  ```text
-  name = "Andre"
-  printl: #name
-  printl: #name
-  ```
-  prints `Andre`, then an empty line, then `ndre`. The first `printl` turns the `A` of `name` into a newline byte, so the second one prints that newline followed by `ndre`. Fix: put a dedicated `nl: db 10` in `.data` and point `rsi` at that.
-- **Negative integers print wrong.** `n = -5` prints `18446744073709551611`, because `pnum` divides unsigned. There is also no lower-bound check.
-- **No escape sequences.** `"a\nb"` prints a literal backslash followed by `n`, since NASM doesn't process escapes in double-quoted strings. Use `printl:` for newlines.
-- **No comments.** A line starting with `#` fails with `undefined state`.
-- **Variables can't be reassigned.** A second `x = 2` produces a NASM error (`label inconsistently redefined`).
-- **Only literals and `#variables` as print arguments.** There are no expressions, input, conditionals or loops yet.
-- **Linux x86-64 only**, and it needs `nasm` and `ld` installed.
-- There is no automated test suite. The examples are the tests for now.
