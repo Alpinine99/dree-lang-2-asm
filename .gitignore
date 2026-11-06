@@ -6,4 +6,6 @@
 dist/*
 build/*
 release/*
+tmp/*
+.vscode/*
 
