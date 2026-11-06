@@ -7,6 +7,7 @@ DEBUG, INFO, WARNING, ERROR = 1, 2, 3, 4,
 LOG_LEVEL = INFO
 
 __version__ = VERSION
+PROG_NAME = os.path.basename(sys.argv[0])
 
 def LOG(level: int, *msg):
     '''
@@ -137,7 +138,8 @@ def main():
     try:
         if args.output and args.compile_only and len(args.files) > 1:
             raise Exception("cannot specify -o with -c and multiple files")
-        args.output = "a"
+        if not args.output:
+            args.output = "a.out"
         if len(args.files) < 1:
             raise Exception("no input files specified")
         fexist = [os.path.exists(file) for file in args.files]

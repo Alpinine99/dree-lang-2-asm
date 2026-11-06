@@ -3,20 +3,20 @@ CC_FLAGS 	:= --onefile
 SOURCES 	:= $(wildcard src/*.py)
 DL_FILES 	:= $(wildcard examples/*.dl)
 
-all: build/dl-compiler $(DL_FILES)
+all: build/dlc $(DL_FILES)
 
-build/dl-compiler: $(SOURCES)
+build/dlc: $(SOURCES)
 	$(CC) $(CC_FLAGS) --name compiler $^
 	$(RM) -r build/* compiler.spec
 	mv ./dist/compiler $@
 	$(RM) -r dist
 
-%.dl: build/dl-compiler | build
+%.dl: build/examples
 	@echo "compiling: $@"
-	cd build && ./dl-compiler ../$@
+	./build/dlc $@ -o build/$(@:.dl=)
 
-build:
-	mkdir -p build
+build/examples:
+	mkdir -p $@
 
 clean:
 	$(RM) -r build
