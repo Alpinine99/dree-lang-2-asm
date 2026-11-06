@@ -146,7 +146,7 @@ def main():
         if False in fexist:
             raise Exception(f"file '{args.files[fexist.index(False)]}' doesn't exist")
     except Exception as e:
-        LOG(ERROR, f"{PROG_NAME}: {e}")
+        LOG(ERROR, f"{e}")
 
     LOG_LEVEL = args.loglevel
 
